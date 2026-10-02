@@ -1,0 +1,170 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>GeoScaffold: Learning Compact Geometric Latents via Reconstruction for Efficient Vision-Language Navigation</title>
+  <meta name="description" content="GeoScaffold learns compact geometric latents through training-time reconstruction of depth, connectivity, and traversability for efficient RGB-only vision-language navigation.">
+  <meta property="og:title" content="GeoScaffold: Learning Compact Geometric Latents via Reconstruction for Efficient Vision-Language Navigation">
+  <meta property="og:description" content="Training-time geometric supervision for streaming vision-language navigation. RGB and language at deployment, with no resident depth tokenizer, 3D encoder, or reconstruction heads.">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://eason-jon.github.io/GeoScaffold/">
+  <meta property="og:image" content="https://eason-jon.github.io/GeoScaffold/static/images/paper/paradigms.png">
+  <meta property="og:image:alt" content="Comparison of streaming Video-LLM, geometry-enhanced, and GeoScaffold navigation architectures.">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="citation_title" content="GeoScaffold: Learning Compact Geometric Latents via Reconstruction for Efficient Vision-Language Navigation">
+  <meta name="citation_author" content="Yixuan Jiang">
+  <meta name="citation_author" content="Wentong Li">
+  <meta name="citation_author" content="An Liu">
+  <meta name="citation_author" content="Zihao Xin">
+  <meta name="citation_author" content="Fulin Tang">
+  <meta name="citation_author" content="Cong Leng">
+  <meta name="citation_author" content="Yang Gao">
+  <meta name="citation_author" content="Jian Cheng">
+  <meta name="citation_pdf_url" content="https://eason-jon.github.io/GeoScaffold/static/papers/GeoScaffold.pdf">
+  <link rel="canonical" href="https://eason-jon.github.io/GeoScaffold/">
+  <link rel="icon" href="./static/images/favicon.svg" type="image/svg+xml">
+  <link rel="preload" href="./static/fonts/noto-sans-latin.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="stylesheet" href="./static/css/index.css">
+  <script src="./static/js/index.js" defer></script>
+</head>
+<body class="paper-page">
+  <a class="skip-link" href="#main">Skip to content</a>
+  <main id="main">
+    <!-- Title and author order: paper/main.tex and paper/author_list/authors.tex. -->
+    <section class="publication-header shell" id="top" aria-labelledby="project-title">
+      <h1 class="publication-title" id="project-title">GeoScaffold: Learning Compact Geometric Latents via Reconstruction for Efficient Vision-Language Navigation</h1>
+      <div class="publication-authors" aria-label="Authors">
+        <span class="author-block"><span class="author-name">Yixuan Jiang</span><sup>1,2</sup>,</span>
+        <span class="author-block"><span class="author-name">Wentong Li</span><sup>3</sup>,</span>
+        <span class="author-block"><span class="author-name">An Liu</span><sup>2</sup>,</span>
+        <span class="author-block"><span class="author-name">Zihao Xin</span><sup>3</sup>,</span>
+        <span class="author-block"><span class="author-name">Fulin Tang</span><sup>2,4,✉</sup>,</span>
+        <span class="author-block"><span class="author-name">Cong Leng</span><sup>4</sup>,</span>
+        <span class="author-block"><span class="author-name">Yang Gao</span><sup>1</sup>,</span>
+        <span class="author-block"><span class="author-name">Jian Cheng</span><sup>2</sup></span>
+      </div>
+      <div class="publication-affiliations">
+        <span><sup>1</sup> Nanjing University, Nanjing, China</span>
+        <span><sup>2</sup> Institute of Automation, Chinese Academy of Sciences, Beijing, China</span>
+        <span><sup>3</sup> Nanjing University of Aeronautics and Astronautics, Nanjing, China</span>
+        <span><sup>4</sup> MAICRO, Nanjing, China</span>
+      </div>
+      <div class="publication-links" aria-label="Project resources">
+        <a class="resource-button" href="./static/papers/GeoScaffold.pdf" target="_blank" rel="noopener">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true"><path d="M7 3h7l4 4v14H6V3h1Z"/><path d="M14 3v5h4M9 12h6M9 16h6"/></svg>
+          <span>Paper</span>
+        </a>
+        <!-- Add the official code repository URL when available. -->
+        <button class="resource-button" type="button" disabled aria-label="Code — coming soon" title="Code repository coming soon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="m8 7-5 5 5 5m8-10 5 5-5 5m-3-14-2 18"/></svg>
+          <span>Code <small>(soon)</small></span>
+        </button>
+      </div>
+    </section>
+
+    <!-- Abstract transcribed from the supplied manuscript. -->
+    <section class="section abstract-section" id="abstract" aria-labelledby="abstract-title">
+      <div class="reading-width">
+        <h2 id="abstract-title">Abstract</h2>
+        <div class="abstract-content"><p>Recent vision-and-language navigation (VLN) systems increasingly adopt streaming Video-LLM policies that map egocentric RGB observations and instructions directly to low-level actions. Yet these policies inherit weak 3D geometric priors from 2D pretraining. Existing geometry-aware extensions charge a persistent inference-time price: depth sensors, 3D encoders, or per-step perception tool calls. We propose GeoScaffold, a geometric supervision framework that pays this price once, at training time, by internalizing geometry into the policy itself. It first learns a compact depth tokenizer on depth maps from the training trajectories and freezes it. It then fine-tunes the policy with a handful of learnable geometry query tokens, training their hidden states to reconstruct navigation-critical geometry such as depth, connectivity, and traversability. This supervision turns the query states into compact geometric latents for action decoding, and through the shared weights also internalizes geometry into the backbone&#x27;s own representations. Like a scaffold, the tokenizer, target generators, and reconstruction heads are discarded after training, leaving the backbone and action interface unchanged. Extensive experiments show that GeoScaffold consistently outperforms leading vision-only navigators on continuous VLN benchmarks, offering a practical paradigm for lightweight edge deployment of spatially aware embodied navigation models.</p></div>
+      </div>
+    </section>
+
+    <div class="teaser shell" id="overview">
+      <figure class="paper-figure ">
+          <a class="figure-link" href="./static/images/paper/framework.png" target="_blank" rel="noopener" title="Open full-resolution figure">
+            <img src="./static/images/paper/framework.png" alt="GeoScaffold training framework with depth, connectivity, and traversability reconstruction heads, plus the hybrid attention mask." width="2401" height="830" loading="lazy" decoding="async">
+          </a>
+          <figcaption><strong>Overview of GeoScaffold.</strong> Eight geometry query tokens learn to reconstruct depth, connectivity, and traversability through training-only heads. Their hidden states become compact geometric latents for action decoding. The auxiliary modules are discarded after training.</figcaption>
+        </figure>
+    </div>
+
+    <section class="section" id="demos" aria-labelledby="demos-title">
+      <div class="shell">
+        <h2 id="demos-title">Demos</h2>
+        <video class="demo-video" controls playsinline preload="metadata" width="1280" height="720" aria-label="GeoScaffold demo video">
+          <source src="./static/videos/demo.mp4" type="video/mp4">
+          <p>Your browser does not support embedded video. <a href="./static/videos/demo.mp4">Download the demo video</a>.</p>
+        </video>
+      </div>
+    </section>
+
+    <section class="section" id="method" aria-labelledby="method-title">
+      <div class="shell">
+        <h2 id="method-title">Learning Geometry During Training</h2>
+        <figure class="paper-figure ">
+          <a class="figure-link" href="./static/images/paper/paradigms.png" target="_blank" rel="noopener" title="Open full-resolution figure">
+            <img src="./static/images/paper/paradigms.png" alt="Three navigation paradigms: direct RGB streaming Video-LLM, a policy with a resident spatial encoder, and GeoScaffold with training-only geometry supervision." width="2401" height="860" loading="lazy" decoding="async">
+          </a>
+          <figcaption><strong>Geometry as a training scaffold.</strong> Streaming RGB policies receive geometric supervision through dedicated query tokens, enabling spatial reasoning without a resident depth or 3D encoder.</figcaption>
+        </figure>
+        <div class="method-description figure-description">
+          <p><strong>Stage I: learn a compact depth tokenizer.</strong> A 0.74M-parameter VQ-VAE is trained offline on depth maps from navigation training trajectories, then frozen. It represents each depth map as 100 discrete tokens on a 10 × 10 grid, using a 128-entry codebook.</p>
+          <p><strong>Stage II: reconstruct geometry through query tokens.</strong> Eight learnable query tokens are inserted before each action block: four for depth, two for connectivity, and two for traversability. Training-only heads reconstruct the corresponding geometric targets. A hybrid attention mask lets the queries within a turn attend to one another bidirectionally while the remaining sequence stays causal.</p>
+          <p><strong>Deployment: retain the geometric latents.</strong> The tokenizer, target generators, and reconstruction heads are discarded after training. The deployed navigator takes RGB observations, language, and dialogue history. The learned query embeddings and hybrid attention mask remain, allowing action decoding to read the compact geometric latents.</p>
+        </div>
+        <figure class="paper-figure secondary-figure geometry-targets">
+          <a class="figure-link" href="./static/images/paper/geometric-targets.png" target="_blank" rel="noopener" title="Open full-resolution figure">
+            <img src="./static/images/paper/geometric-targets.png" alt="An RGB observation with reconstructed depth, connectivity, and traversability targets decoded from query-token hidden states." width="2401" height="1001" loading="lazy" decoding="async">
+          </a>
+          <figcaption><strong>Navigation-relevant geometric targets.</strong> Depth encodes metric structure, connectivity highlights passages and openings, and traversability identifies free-space and floor-like regions.</figcaption>
+        </figure>
+      </div>
+    </section>
+
+    <!-- Original Table 1 rendered directly from manuscript page 7. -->
+    <section class="section" id="results" aria-labelledby="results-title">
+      <div class="shell">
+        <h2 id="results-title">Experimental Results</h2>
+        <figure class="paper-figure">
+          <a class="figure-link" href="./static/images/paper/experimental-results-table.png" target="_blank" rel="noopener" title="Open original table at full resolution">
+            <img src="./static/images/paper/experimental-results-table.png" alt="Original Table 1 from the GeoScaffold manuscript, including its caption, all compared methods, observation requirements, and R2R-CE and RxR-CE Val-Unseen metrics." width="2828" height="2422" loading="lazy" decoding="async">
+          </a>
+        </figure>
+      </div>
+    </section>
+
+    <section class="section" id="efficiency" aria-labelledby="efficiency-title">
+      <div class="reading-width">
+        <h2 id="efficiency-title">Inference Efficiency</h2>
+        <div class="results-table-wrap" role="region" aria-label="Inference latency comparison" tabindex="0">
+          <table class="results-table latency-table">
+            <caption>Steady-state inference on one NVIDIA RTX 4090</caption>
+            <thead><tr><th scope="col">Method</th><th scope="col">Average latency ↓</th></tr></thead>
+            <tbody><tr><th scope="row">JanusVLN</th><td>1,160 ms / frame</td></tr><tr><th scope="row">GA-VLN</th><td>750 ms / frame</td></tr><tr class="ours"><th scope="row">GeoScaffold-4B</th><td>81 ms / frame</td></tr></tbody>
+          </table>
+        </div>
+        <div class="results-notes"><p>Latency measures the time to process one incoming frame and emit an action, after the streaming context fills its sliding window. GeoScaffold-4B supports over 12 Hz on the RTX 4090. JanusVLN retains a VGGT 3D encoder, and GA-VLN builds a geometry-aware BEV representation from RGB-D observations; neither additional module is needed by GeoScaffold at inference.</p></div>
+        <figure class="paper-figure secondary-figure">
+          <a class="figure-link" href="./static/images/paper/latency_comparison_iclr_no8b.png" target="_blank" rel="noopener" title="Open full-resolution figure">
+            <img src="./static/images/paper/latency_comparison_iclr_no8b.png" alt="Per-frame latency over 80 frames on an RTX 4090 for GeoScaffold-4B, JanusVLN, and GA-VLN. GeoScaffold stays below 100 milliseconds except for periodic history-refresh spikes." width="1948" height="1051" loading="lazy" decoding="async">
+          </a>
+          <figcaption><strong>Per-frame latency traces on an RTX 4090.</strong> GeoScaffold’s short periodic spikes coincide with updates to the streaming context. The plotted traces complement the steady-state averages above.</figcaption>
+        </figure>
+      </div>
+    </section>
+
+    <section class="section citation-section" id="bibtex" aria-labelledby="citation-title">
+      <div class="shell">
+        <div class="citation-heading"><h2 id="citation-title">BibTeX</h2><button class="copy-button" type="button" data-copy-citation hidden><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true"><rect x="8" y="8" width="12" height="13" rx="2"/><path d="M16 8V5a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h3"/></svg><span>Copy BibTeX</span></button></div>
+        <pre class="bibtex-code" tabindex="0" aria-label="BibTeX citation"><code id="citation-text">@misc{jiang2026geoscaffold,
+  title  = {GeoScaffold: Learning Compact Geometric Latents via
+            Reconstruction for Efficient Vision-Language Navigation},
+  author = {Yixuan Jiang and Wentong Li and An Liu and Zihao Xin and
+            Fulin Tang and Cong Leng and Yang Gao and Jian Cheng},
+  year   = {2026},
+  note   = {Manuscript},
+  url    = {https://eason-jon.github.io/GeoScaffold/}
+}</code></pre>
+        <p class="copy-feedback" role="status" aria-live="polite" data-copy-feedback></p>
+      </div>
+    </section>
+  </main>
+  <footer class="paper-footer">
+    <div class="reading-width">
+      <p class="footer-links"><a href="../">All projects</a><span aria-hidden="true">·</span><a href="#top">Back to top</a></p>
+    </div>
+  </footer>
+</body>
+</html>
